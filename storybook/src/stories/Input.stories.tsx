@@ -6,6 +6,11 @@ const meta: Meta<typeof Input> = {
   component: Input,
   tags: ["autodocs"],
   argTypes: {},
+  args: {
+    onChange: (e) => console.log(e.target.value),
+    onBlur: (e) => console.log(e.target.value),
+    onFocus: (e) => console.log(e.target.value),
+  },
 };
 
 export default meta;

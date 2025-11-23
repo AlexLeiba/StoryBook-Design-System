@@ -10,13 +10,14 @@ import React, { forwardRef, type ComponentProps } from "react";
 
 const buttonVariants = cva(
   [
-    "py-2 rounded-2xl ",
+    "py-2 rounded-2xl px-2 cursor-pointer ",
     "focus:outline-none focus-within:ring focus-within:ring-black ",
+    "disabled:cursor-not-allowed disabled:opacity-50 disabled:ring disabled:ring-gray-400 disabled:ring-offset-2 disabled:ring-offset-gray-100",
   ],
   {
     variants: {
       size: {
-        small: "px-2",
+        small: "px-4",
         large: "px-8 py-4 text-2xl",
         medium: "px-6 font-medium text-xl",
       },

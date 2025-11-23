@@ -13,9 +13,16 @@ const meta: Meta<typeof Button> = {
 
 export default meta;
 
-type Story = StoryObj<typeof meta>; //this is the type of the component
+type Story = StoryObj<typeof Button>; //this is the type of the component
 
 export const Primary: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "This is a primary button", //additional desc in the auto generated docs.
+      },
+    },
+  },
   args: {
     //args is what is passed into the component as props
 
@@ -26,6 +33,13 @@ export const Primary: Story = {
 };
 
 export const Secondary: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "This is a secondary button",
+      },
+    },
+  },
   args: {
     //args is what is passed into the component as props
 

@@ -2,12 +2,7 @@ import { X } from "lucide-react";
 import React, { createContext, useContext, useRef, useState } from "react";
 import { Button } from "./Button";
 import { cva, type VariantProps } from "class-variance-authority";
-
-// Create as compount component design pattern
-// Parent keeps and shares the state via context
-// all children are represented as separate components
-// children receive state via context of parent
-// so parent passes the state to its children via provider
+import { cn } from "../../../lib/utilities";
 
 type ContextProps = {
   open: boolean;
@@ -22,14 +17,14 @@ const DialogContext = createContext<ContextProps>({
   handleCancel: () => {},
 });
 
-type DialogProps = {
+export type DialogProps = {
   children: React.ReactNode;
   handleSubmit: () => void;
   handleCancel: () => void;
   isOpened?: boolean;
 };
 
-function Dialog({
+export function Dialog({
   children,
   handleSubmit,
   handleCancel,
@@ -57,12 +52,16 @@ function Dialog({
       value={{ open, setOpen, handleSubmit, handleCancel }}
     >
       {/*  backdrop*/}
-      <div className="bg-black/50 fixed inset-0 flex items-center">
+      <div
+        className={cn(
+          open ? "bg-black/50 fixed inset-0 flex items-center " : "hidden"
+        )}
+      >
         {/* modal body */}
         {open && (
           <div
             ref={refContainer}
-            className="flex flex-col gap-2 justify-between bg-white z-50 p-4 rounded-2xl lg:mx-[25%] mx-[10%]"
+            className="flex flex-col gap-8 justify-between bg-white z-50 p-4 rounded-2xl lg:mx-[25%] mx-[10%]"
           >
             {children}
           </div>
@@ -104,41 +103,35 @@ const footerVariants = cva(["flex w-full  gap-2"], {
       row: "flex-row",
       column: "flex-col",
     },
+    buttonPosition: {
+      left: "justify-start",
+      right: "justify-end",
+    },
   },
   defaultVariants: {
     variant: "delete",
     buttonDirection: "row",
+    buttonPosition: "right",
   },
 });
-// const footerVariants = cva(["flex justify-end gap-2"], {
-//   variants: {
-//     variant: {
-//       delete: "bg-green-400",
-//       submit: "bg-yellow-400",
-//     },
-//   },
-//   defaultVariants: {
-//     variant: "delete",
-//   },
-// });
 
-type DialogFooterProps = VariantProps<typeof footerVariants> & {
-  children: React.ReactNode;
+export type DialogFooterProps = VariantProps<typeof footerVariants> & {
   variant?: "delete" | "submit";
   fullWidth?: boolean;
+  cancelButtonTitle?: string;
+  submitButtonTitle?: string;
 };
 
 export function DialogFooter({
-  children,
   variant,
   fullWidth,
   buttonDirection,
+  cancelButtonTitle,
+  submitButtonTitle,
 }: DialogFooterProps) {
   const { setOpen, handleCancel, handleSubmit } = useDialog();
   return (
     <div className="flex-col flex">
-      {children}
-
       <div className={footerVariants({ variant, buttonDirection })}>
         <Button
           fullWidth={fullWidth}
@@ -148,7 +141,7 @@ export function DialogFooter({
             setOpen(false);
           }}
         >
-          Cancel
+          {cancelButtonTitle || "Cancel"}
         </Button>
         <Button
           fullWidth={fullWidth}
@@ -156,11 +149,9 @@ export function DialogFooter({
           variant={variant === "delete" ? "destructive" : "secondary"}
           onClick={handleSubmit}
         >
-          Submit
+          {submitButtonTitle || "Submit"}
         </Button>
       </div>
     </div>
   );
 }
-
-export default Dialog;
