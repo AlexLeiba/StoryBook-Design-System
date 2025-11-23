@@ -1,6 +1,6 @@
-import { forwardRef, type ComponentProps } from "react";
+import { forwardRef, useState, type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { BadgeAlert, BadgeCheck } from "lucide-react";
+import { BadgeAlert, BadgeCheck, Eye, EyeClosed } from "lucide-react";
 import { cn } from "../../../lib/utilities";
 import { labelInputVariants } from "../../../lib/cvaVariants";
 
@@ -52,10 +52,12 @@ const inputVariants = cva(
 );
 
 type Props = VariantProps<typeof inputVariants> &
-  ComponentProps<"input"> & {
+  ComponentProps<"input"> &
+  ComponentProps<"textarea"> & {
     title: string;
     error?: string;
     success?: boolean;
+    type?: "number" | "text" | "password" | "textarea";
     // sizeType?: "small" | "medium" | "large";
   };
 
@@ -68,8 +70,10 @@ export const Input = forwardRef<HTMLInputElement, Props>(
     error,
     success,
     sizeType,
+    type,
     ...props
   }: Props) => {
+    const [showPassword, setShowPassword] = useState(false);
     return (
       <div className="flex flex-col gap-1">
         <label htmlFor="input">
@@ -85,19 +89,56 @@ export const Input = forwardRef<HTMLInputElement, Props>(
           </p>
         </label>
         <div className="relative w-full">
-          <input
-            id="input"
-            type="text"
-            className={inputVariants({
-              variant,
-              sizeType,
-              weight,
-              errorState: !!error,
-              successState: !!success,
-              className,
-            })}
-            {...props}
-          />
+          {type === "textarea" ? (
+            <textarea
+              rows={4}
+              id="input"
+              className={inputVariants({
+                variant,
+                sizeType,
+                weight,
+                errorState: !!error,
+                successState: !!success,
+                className,
+              })}
+              {...props}
+            />
+          ) : (
+            <input
+              id="input"
+              type={type}
+              className={inputVariants({
+                variant,
+                sizeType,
+                weight,
+                errorState: !!error,
+                successState: !!success,
+                className,
+              })}
+              {...props}
+            />
+          )}
+          {type === "password" && (
+            <>
+              {showPassword ? (
+                <Eye
+                  onClick={() => setShowPassword(false)}
+                  className={cn(
+                    "absolute top-[calc(50%-0.7rem)] right-4",
+                    success ? "text-green-600" : "text-gray-400"
+                  )}
+                />
+              ) : (
+                <EyeClosed
+                  onClick={() => setShowPassword(true)}
+                  className={cn(
+                    "absolute top-[calc(50%-0.7rem)] right-4",
+                    success ? "text-green-600" : "text-gray-400"
+                  )}
+                />
+              )}
+            </>
+          )}
           {success && (
             <BadgeCheck
               className={cn(

@@ -40,6 +40,9 @@ const meta: Meta = {
   component: DialogComponent,
   //   tags: ["autodocs"],
   argTypes: {},
+  // parameters: {
+  //   layout: "fullscreen",
+  // },
 };
 
 export default meta;

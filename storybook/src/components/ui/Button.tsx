@@ -8,6 +8,8 @@ import React, { forwardRef, type ComponentProps } from "react";
 //   className: ButtonHTMLAttributes<HTMLButtonElement>;
 // };
 
+// TODO button as link, with icon, with loading state
+
 const buttonVariants = cva(
   [
     "py-2 rounded-2xl px-2 cursor-pointer ",
