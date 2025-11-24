@@ -12,3 +12,43 @@
     background-color: #f9f9f9;
   }
 }
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader-circle {
+  opacity: 0.5;
+  /* position: absolute; */
+  z-index: 1;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  border-top: 2px solid #ffffff;
+  /* border-bottom: 2px solid #ffffff; */
+  width: 30px;
+  height: 30px;
+  animation: circle 1s linear infinite;
+}
+.loader-circle-2 {
+  opacity: 0.5;
+  position: absolute;
+  z-index: 2;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-top: 2px solid #ffffff;
+  width: 30px;
+  height: 30px;
+  animation: circle 2s ease-in-out infinite;
+}
+@keyframes circle {
+  from 0% {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

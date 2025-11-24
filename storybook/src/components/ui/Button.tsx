@@ -12,7 +12,7 @@ import React, { forwardRef, type ComponentProps } from "react";
 
 const buttonVariants = cva(
   [
-    "py-2 rounded-2xl px-2 cursor-pointer ",
+    "py-2 px-2 cursor-pointer ",
     "focus:outline-none focus-within:ring focus-within:ring-black ",
     "disabled:cursor-not-allowed disabled:opacity-50 disabled:ring disabled:ring-gray-400 disabled:ring-offset-2 disabled:ring-offset-gray-100",
   ],
@@ -24,9 +24,10 @@ const buttonVariants = cva(
         medium: "px-6 font-medium text-xl",
       },
       variant: {
-        primary: "bg-gray-800 text-white",
-        secondary: "bg-yellow-400",
-        destructive: "bg-red-600 text-white",
+        primary: "bg-gray-800 text-white  rounded-2xl",
+        secondary: "bg-yellow-400  rounded-2xl",
+        destructive: "bg-red-600 text-white  rounded-2xl",
+        tertiary: "bg-purple-800 text-white rounded-xs ",
       },
       fullWidth: {
         true: "w-full",
