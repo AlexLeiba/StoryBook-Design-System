@@ -32,7 +32,6 @@ export function Loader({ size = "medium", visibility = false }: Props) {
   return (
     <>
       <Loader2
-        size={size}
         className={loaderVariants({
           sizeType: size,
           visibilityState: visibility,

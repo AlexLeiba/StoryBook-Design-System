@@ -1,6 +1,11 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { Info } from "lucide-react";
-import React, { useEffect, useRef, useState, type ComponentProps } from "react";
+import React, {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { cn } from "../../../lib/utilities";
 
 const tooltipVariants = cva(
@@ -42,28 +47,30 @@ const titleVariants = cva("text-base", {
   },
 });
 
-type Props = ComponentProps<"div"> &
+export type Props = ComponentProps<"div"> &
   VariantProps<typeof tooltipVariants> & {
     children: React.ReactNode;
     title: string;
     icon?: React.ReactNode;
+    visible?: boolean;
     handleIconClick?: () => void;
   };
 
-function Tooltip({
+export function Tooltip({
   children,
-  title,
-  size,
-  variant,
+  title = "This is a tooltip",
+  size = "medium",
+  variant = "primary",
   position,
   icon,
+  visible = false,
   handleIconClick,
   ...props
 }: Props) {
   const childrenRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const [visibility, setVisibility] = useState(false);
+  const [visibility, setVisibility] = useState(visible);
   const [coords, setCoords] = useState<{
     top?: number;
     left?: number;
@@ -76,210 +83,151 @@ function Tooltip({
     right: 0,
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     function updatePosition() {
-      if (childrenRef.current && tooltipRef.current) {
-        const coordsElementData = childrenRef.current.getBoundingClientRect();
-        const { width: tooltipWidth } =
-          tooltipRef.current.getBoundingClientRect();
+      if (!childrenRef.current || !tooltipRef.current || !visibility) return;
 
-        const {
-          left,
-          x, //position on x axis from left edge of element
-          y, //position of y axis from top edge of element
-          width: targetElementWidth,
-          height: targetElementHeight,
-        } = coordsElementData;
+      const coordsElementData = childrenRef.current.getBoundingClientRect();
+      const { width: tooltipWidth } =
+        tooltipRef.current.getBoundingClientRect();
 
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+      const {
+        left,
+        x, //position on x axis from left edge of element
+        y, //position of y axis from top edge of element
+        width: targetElementWidth,
+        height: targetElementHeight,
+      } = coordsElementData;
 
-        const isOutsideViewportLeft = x < 50;
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
-        const isOutsideViewportRight =
-          left + targetElementWidth + 50 > viewportWidth;
+      const isOutsideViewportLeft = x < 50;
 
-        const isOutsideViewportBottom =
-          y + targetElementHeight + 50 > viewportHeight;
+      const isOutsideViewportRight =
+        left + targetElementWidth + 50 > viewportWidth;
 
-        const isOutsideViewportTop = y < 50;
+      const isOutsideViewportBottom =
+        y + targetElementHeight + 50 > viewportHeight;
 
-        const absolutePositions: {
-          top?: number;
-          left?: number;
-          right?: number;
-          transform?: string;
-          bottom?: number;
-        } = {};
+      const isOutsideViewportTop = y < 50;
 
-        // RIGHT LEFT TOP ( FULL WIDTH TOP) POSITION
-        if (
-          isOutsideViewportRight &&
-          isOutsideViewportLeft &&
-          isOutsideViewportTop
-        ) {
-          // SHOW TOOLTIP BOTTOM MIDDLE
+      const absolutePositions: {
+        top?: number;
+        left?: number;
+        right?: number;
+        transform?: string;
+        bottom?: number;
+      } = {};
+
+      //FULL-WIDTH RIGHT LEFT TOP ( FULL WIDTH TOP) POSITION
+      if (
+        isOutsideViewportRight &&
+        isOutsideViewportLeft &&
+        isOutsideViewportTop
+      ) {
+        // SHOW TOOLTIP BOTTOM MIDDLE
+        absolutePositions.top = targetElementHeight + 10;
+        absolutePositions.left = targetElementWidth / 2;
+        absolutePositions.transform = "translateX(-50%)";
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // FULL-WIDTH RIGHT LEFT BOTTOM (FULL WIDTH BOTTOM)  POSITION
+      if (
+        isOutsideViewportRight &&
+        isOutsideViewportLeft &&
+        isOutsideViewportBottom
+      ) {
+        // SHOW TOOLTIP TOP MIDDLE
+        absolutePositions.bottom = targetElementHeight + 10;
+        absolutePositions.left = targetElementWidth / 2;
+        absolutePositions.transform = "translateX(-50%)";
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // RIGHT TOP  POSITION
+      if (isOutsideViewportRight && isOutsideViewportTop) {
+        if (tooltipWidth < targetElementWidth) {
+          // SHOW MIDDLE BOTTOM
           absolutePositions.top = targetElementHeight + 10;
           absolutePositions.left = targetElementWidth / 2;
           absolutePositions.transform = "translateX(-50%)";
-          return setCoords({
-            ...absolutePositions,
-          });
         }
 
-        // RIGHT LEFT BOTTOM (FULL WIDTH BOTTOM)  POSITION
-        if (
-          isOutsideViewportRight &&
-          isOutsideViewportLeft &&
-          isOutsideViewportBottom
-        ) {
-          // SHOW TOOLTIP TOP MIDDLE
-          absolutePositions.bottom = targetElementHeight + 10;
+        if (tooltipWidth >= targetElementWidth) {
+          // SHOW BOTTOM LEFT
+          absolutePositions.top = targetElementHeight + 10;
+          absolutePositions.right = targetElementWidth;
+        }
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // LEFT TOP  POSITION
+      if (isOutsideViewportLeft && isOutsideViewportTop) {
+        if (tooltipWidth < targetElementWidth) {
+          // SHOW BOTTOM MIDDLE
+
+          absolutePositions.top = targetElementHeight + 10;
           absolutePositions.left = targetElementWidth / 2;
           absolutePositions.transform = "translateX(-50%)";
-          return setCoords({
-            ...absolutePositions,
-          });
         }
-
-        // RIGHT TOP  POSITION
-        if (isOutsideViewportRight && isOutsideViewportTop) {
-          if (tooltipWidth < targetElementWidth) {
-            // SHOW MIDDLE BOTTOM
-            absolutePositions.top = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-
-          if (tooltipWidth >= targetElementWidth) {
-            // SHOW BOTTOM LEFT
-            absolutePositions.top = targetElementHeight + 10;
-            absolutePositions.right = targetElementWidth;
-          }
-          return setCoords({
-            ...absolutePositions,
-          });
+        if (tooltipWidth >= targetElementWidth) {
+          // SHOW BOTTOM RIGHT
+          absolutePositions.top = targetElementHeight + 10;
+          absolutePositions.left = targetElementWidth + 10;
         }
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
 
-        // LEFT TOP  POSITION
-        if (isOutsideViewportLeft && isOutsideViewportTop) {
-          if (tooltipWidth < targetElementWidth) {
-            // SHOW BOTTOM MIDDLE
-
-            absolutePositions.top = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-          if (tooltipWidth >= targetElementWidth) {
-            // SHOW BOTTOM RIGHT
-            absolutePositions.top = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth + 10;
-          }
-          return setCoords({
-            ...absolutePositions,
-          });
-        }
-
-        // RIGHT BOTTOM  POSITION
-        if (isOutsideViewportRight && isOutsideViewportBottom) {
-          if (tooltipWidth < targetElementWidth) {
-            // SHOW TOP MIDDLE
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-
-          if (tooltipWidth >= targetElementWidth) {
-            // SHOW TOP LEFT
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.right = targetElementWidth;
-          }
-          return setCoords({
-            ...absolutePositions,
-          });
-        }
-
-        // LEFT BOTTOM  POSITION
-        if (isOutsideViewportLeft && isOutsideViewportBottom) {
-          if (tooltipWidth < targetElementWidth) {
-            // SHOW TOP MIDDLE
-
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-          if (tooltipWidth >= targetElementWidth) {
-            // SHOW TOP RIGHT
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth + 10;
-          }
-          return setCoords({
-            ...absolutePositions,
-          });
-        }
-
-        //BOTTOM  POSITION
-        if (isOutsideViewportBottom) {
+      // RIGHT BOTTOM  POSITION
+      if (isOutsideViewportRight && isOutsideViewportBottom) {
+        if (tooltipWidth < targetElementWidth) {
           // SHOW TOP MIDDLE
           absolutePositions.bottom = targetElementHeight + 10;
           absolutePositions.left = targetElementWidth / 2;
           absolutePositions.transform = "translateX(-50%)";
-          return setCoords({
-            ...absolutePositions,
-          });
         }
-        //  TOP  POSITION
-        if (isOutsideViewportTop) {
-          // SHOW BOTTOM MIDDLE
-          absolutePositions.top = targetElementHeight + 10;
+
+        if (tooltipWidth >= targetElementWidth) {
+          // SHOW TOP LEFT
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.right = targetElementWidth;
+        }
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // LEFT BOTTOM  POSITION
+      if (isOutsideViewportLeft && isOutsideViewportBottom) {
+        if (tooltipWidth < targetElementWidth) {
+          // SHOW TOP MIDDLE
+
+          absolutePositions.bottom = targetElementHeight + 10;
           absolutePositions.left = targetElementWidth / 2;
           absolutePositions.transform = "translateX(-50%)";
-
-          return setCoords({
-            ...absolutePositions,
-          });
         }
-
-        // LEFT  POSITION
-        if (isOutsideViewportLeft) {
-          if (tooltipWidth > targetElementWidth) {
-            // SHOW TOP RIGHT
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth + 10;
-          }
-
-          if (tooltipWidth <= targetElementWidth) {
-            // SHOW TOP MIDDLE
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-
-          return setCoords({
-            ...absolutePositions,
-          });
+        if (tooltipWidth >= targetElementWidth) {
+          // SHOW TOP RIGHT
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.left = targetElementWidth + 10;
         }
-        // RIGHT POSITION
-        if (isOutsideViewportRight) {
-          if (tooltipWidth > targetElementWidth) {
-            // SHOW TOP LEFT
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.right = targetElementWidth + 10;
-          }
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
 
-          if (tooltipWidth <= targetElementWidth) {
-            // SHOW  TOP MIDDLE
-            absolutePositions.bottom = targetElementHeight + 10;
-            absolutePositions.left = targetElementWidth / 2;
-            absolutePositions.transform = "translateX(-50%)";
-          }
-          return setCoords({
-            ...absolutePositions,
-          });
-        }
-
-        // MIDDLE POSITION
-
+      //BOTTOM  POSITION
+      if (isOutsideViewportBottom) {
         // SHOW TOP MIDDLE
         absolutePositions.bottom = targetElementHeight + 10;
         absolutePositions.left = targetElementWidth / 2;
@@ -288,10 +236,69 @@ function Tooltip({
           ...absolutePositions,
         });
       }
+      //  TOP  POSITION
+      if (isOutsideViewportTop) {
+        // SHOW BOTTOM MIDDLE
+        absolutePositions.top = targetElementHeight + 10;
+        absolutePositions.left = targetElementWidth / 2;
+        absolutePositions.transform = "translateX(-50%)";
+
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // LEFT  POSITION
+      if (isOutsideViewportLeft) {
+        if (tooltipWidth > targetElementWidth) {
+          // SHOW TOP RIGHT
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.left = targetElementWidth + 10;
+        }
+
+        if (tooltipWidth <= targetElementWidth) {
+          // SHOW TOP MIDDLE
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.left = targetElementWidth / 2;
+          absolutePositions.transform = "translateX(-50%)";
+        }
+
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+      // RIGHT POSITION
+      if (isOutsideViewportRight) {
+        if (tooltipWidth > targetElementWidth) {
+          // SHOW TOP LEFT
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.right = targetElementWidth + 10;
+        }
+
+        if (tooltipWidth <= targetElementWidth) {
+          // SHOW  TOP MIDDLE
+          absolutePositions.bottom = targetElementHeight + 10;
+          absolutePositions.left = targetElementWidth / 2;
+          absolutePositions.transform = "translateX(-50%)";
+        }
+        return setCoords({
+          ...absolutePositions,
+        });
+      }
+
+      // MIDDLE POSITION
+
+      // SHOW TOP MIDDLE
+      absolutePositions.bottom = targetElementHeight + 10;
+      absolutePositions.left = targetElementWidth / 2;
+      absolutePositions.transform = "translateX(-50%)";
+      return setCoords({
+        ...absolutePositions,
+      });
     }
+    updatePosition();
 
     window.addEventListener("scroll", updatePosition);
-    updatePosition();
 
     return () => window.removeEventListener("scroll", updatePosition);
   }, [visibility]);
@@ -302,7 +309,7 @@ function Tooltip({
       title="info"
       onMouseEnter={() => setVisibility(true)}
       onMouseLeave={() => setVisibility(false)}
-      className="relative "
+      className="inline-block relative"
     >
       {visibility && (
         <div
@@ -324,9 +331,9 @@ function Tooltip({
           </div>
         </div>
       )}
-      <div ref={childrenRef}>{children}</div>
+      <div className="inline-block" ref={childrenRef}>
+        {children}
+      </div>
     </div>
   );
 }
-
-export default Tooltip;

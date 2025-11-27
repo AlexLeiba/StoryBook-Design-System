@@ -6,7 +6,7 @@ import { PreviewFile } from "./PreviewFile";
 import { PreviewImage } from "./PreviewImage";
 
 type Props = {
-  handleSubmitFile: (data: {
+  handleSubmitFile?: (data: {
     error: string;
     file: { name: string; url: string }[];
   }) => void;
@@ -104,7 +104,7 @@ export function FileUpload({
         setCaughtError("");
       }
     } catch (error: any) {
-      handleSubmitFile({
+      handleSubmitFile?.({
         error: error.message || "Something went wrong",
         file: [{ name: "", url: "" }],
       });
@@ -126,13 +126,13 @@ export function FileUpload({
 
   useEffect(() => {
     if (uploadVariant === "multiple") {
-      handleSubmitFile({
+      handleSubmitFile?.({
         error: "",
         file: uploadedMultipleFiles,
       });
     }
     if (uploadVariant === "single" && uploadedSingleFile) {
-      handleSubmitFile({
+      handleSubmitFile?.({
         error: "",
         file: [{ name: uploadedSingleFile?.name, url: previewUrl }],
       });

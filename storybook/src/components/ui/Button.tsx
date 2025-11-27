@@ -6,7 +6,7 @@ import { Loader } from "../animations/Loader";
 
 const buttonVariants = cva(
   [
-    "py-2 px-2 cursor-pointer ",
+    "py-2 px-2 cursor-pointer inline-block ",
     "focus-within:outline-none focus-within:ring  focus:ring-offset-2 focus:ring-offset-gray-100",
     "hover:opacity-80",
     "disabled:cursor-not-allowed disabled:opacity-50 ",
@@ -32,13 +32,13 @@ const buttonVariants = cva(
       size: "small",
       variant: "primary",
     },
-    compoundVariants: [
-      {
-        variant: "primary",
-        size: "large",
-        class: "rounded-3xl bg-purple-400 text-white", //when variants above are matched then apply this class utilities
-      },
-    ],
+    // compoundVariants: [
+    //   {
+    //     variant: "primary",
+    //     size: "large",
+    //     class: "rounded-3xl bg-purple-400 text-white", //when variants above are matched then apply this class utilities
+    //   },
+    // ],
   }
 );
 
