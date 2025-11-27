@@ -5,14 +5,6 @@ import { DragAndDropContainer } from "./DragAndDropContainer";
 import { PreviewFile } from "./PreviewFile";
 import { PreviewImage } from "./PreviewImage";
 
-// pseudocode
-// variants: single,multiple
-//handle file upload,delete selected file
-//drag and drop
-// filetypes:files,images
-//based on uploaded file type: for files: csv,xlsx,txt: cards to dwnload files for preview, and clear
-// for images: cards for images preview.
-
 type Props = {
   handleSubmitFile: (data: {
     error: string;

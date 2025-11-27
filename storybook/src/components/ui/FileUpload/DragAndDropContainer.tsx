@@ -75,18 +75,15 @@ export function DragAndDropContainer({
     <button
       onClick={handleClick}
       onDragOver={(e) => {
-        console.log("Over");
         e.preventDefault();
         setIsDragging(true);
       }}
       onDragLeave={(e) => {
-        console.log("Leave");
         e.preventDefault();
         setIsDragging(false);
       }}
       onDragEnd={(e) => {
         e.preventDefault();
-        console.log("End");
       }}
       className={containerVariants({ sizeType: size, isDragging })}
       {...props}
