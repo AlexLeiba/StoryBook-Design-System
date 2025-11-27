@@ -27,6 +27,7 @@ type Props = {
   fileTypes: "files" | "images";
   buttonVariant: "primary" | "secondary" | "tertiary";
   size: "small" | "medium" | "large";
+  loading?: boolean;
 };
 
 const allowedFileTypes = {
@@ -45,6 +46,7 @@ export function FileUpload({
   uiVariant = "button",
   buttonVariant = "primary",
   size = "medium",
+  loading = false,
 }: Props) {
   // TODO add loader here
   const [previewUrl, setPreviewUrl] = React.useState<string>("");
@@ -115,7 +117,6 @@ export function FileUpload({
         file: [{ name: "", url: "" }],
       });
       setCaughtError(error.message || "Something went wrong");
-      console.log(error.message);
     }
   }
 
@@ -173,6 +174,7 @@ export function FileUpload({
       {/* BUTTON UPLOAD */}
       {uiVariant === "button" && (
         <Button
+          loading={loading}
           size={size}
           variant={buttonVariant}
           onClick={() => uploadRef.current?.click()}

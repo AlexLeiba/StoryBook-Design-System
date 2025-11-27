@@ -1,20 +1,15 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import React, { forwardRef, type ComponentProps } from "react";
-
-// type Props = {
-//   size: "small" | "medium" | "large";
-//   variant: "primary" | "secondary";
-//   children: React.ReactNode | string;
-//   className: ButtonHTMLAttributes<HTMLButtonElement>;
-// };
+import { Loader } from "../animations/Loader";
 
 // TODO button as link, with icon, with loading state
 
 const buttonVariants = cva(
   [
     "py-2 px-2 cursor-pointer ",
-    "focus:outline-none focus-within:ring focus-within:ring-black ",
-    "disabled:cursor-not-allowed disabled:opacity-50 disabled:ring disabled:ring-gray-400 disabled:ring-offset-2 disabled:ring-offset-gray-100",
+    "focus-within:outline-none focus-within:ring  focus:ring-offset-2 focus:ring-offset-gray-100",
+    "hover:opacity-80",
+    "disabled:cursor-not-allowed disabled:opacity-50 ",
   ],
   {
     variants: {
@@ -24,10 +19,10 @@ const buttonVariants = cva(
         medium: "px-6 font-medium text-xl",
       },
       variant: {
-        primary: "bg-gray-800 text-white  rounded-2xl",
-        secondary: "bg-yellow-400  rounded-2xl",
-        destructive: "bg-red-600 text-white  rounded-2xl",
-        tertiary: "bg-purple-800 text-white rounded-xs ",
+        primary: "bg-gray-800 text-white  rounded-2xl focus:ring-gray-500",
+        secondary: "bg-yellow-400  rounded-2xl focus:ring-gray-500",
+        destructive: "bg-red-600 text-white  rounded-2xl focus:ring-gray-500",
+        tertiary: "bg-purple-800 text-white rounded-xs  focus:ring-gray-500",
       },
       fullWidth: {
         true: "w-full",
@@ -54,25 +49,49 @@ const titleVariants = cva("text-base", {
       medium: "text-base",
       large: "text-xl font-medium",
     },
+    loadingState: {
+      true: "opacity-0",
+      false: "opacity-100",
+    },
   },
   defaultVariants: {
     size: "medium",
   },
 });
 
-type Props = ComponentProps<"button"> & VariantProps<typeof buttonVariants>;
+type Props = ComponentProps<"button"> &
+  VariantProps<typeof buttonVariants> & {
+    loading?: boolean;
+  };
 
 React.createElement("div", { children: "hello" }, "hello");
 
 export const Button = forwardRef<HTMLButtonElement, Props>(
-  ({ children, size, variant, className, fullWidth, ...props }: Props, ref) => {
+  (
+    {
+      children,
+      size,
+      variant,
+      className,
+      fullWidth,
+      loading = false,
+      ...props
+    }: Props,
+    ref
+  ) => {
     return (
       <button
         ref={ref}
         className={buttonVariants({ size, variant, fullWidth, className })}
         {...props}
       >
-        <p className={titleVariants({ size })}>{children}</p>
+        <div className="relative">
+          <Loader visibility={loading} variant={variant} />
+
+          <p className={titleVariants({ size, loadingState: loading })}>
+            {children}
+          </p>
+        </div>
       </button>
     );
   }

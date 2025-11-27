@@ -1,4 +1,4 @@
-import React, { type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { labelInputVariants } from "../../../lib/cvaVariants";
 import { cva, type VariantProps } from "class-variance-authority";
 
