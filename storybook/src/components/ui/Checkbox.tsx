@@ -18,7 +18,7 @@ const checkboxVariants = cva("", {
 
 type Props = ComponentProps<"input"> &
   VariantProps<typeof checkboxVariants> & {
-    title: string;
+    title?: string;
     error?: string;
     success?: boolean;
   };
@@ -26,14 +26,16 @@ export function Checkbox({ title, error, success, sizeType, ...props }: Props) {
   return (
     <div className="flex flex-col gap-1 items-start">
       <label htmlFor="checkbox">
-        <p
-          className={labelInputVariants({
-            errorState: !!error,
-            successState: !!success,
-          })}
-        >
-          {title}
-        </p>
+        {title && (
+          <p
+            className={labelInputVariants({
+              errorState: !!error,
+              successState: !!success,
+            })}
+          >
+            {title}
+          </p>
+        )}
       </label>
 
       <input

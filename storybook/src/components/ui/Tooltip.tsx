@@ -64,6 +64,7 @@ export function Tooltip({
   position,
   icon,
   visible = false,
+
   handleIconClick,
   ...props
 }: Props) {
@@ -309,7 +310,7 @@ export function Tooltip({
       title="info"
       onMouseEnter={() => setVisibility(true)}
       onMouseLeave={() => setVisibility(false)}
-      className="inline-block relative"
+      className="relative inline-block"
     >
       {visibility && (
         <div
@@ -331,7 +332,7 @@ export function Tooltip({
           </div>
         </div>
       )}
-      <div className="inline-block" ref={childrenRef}>
+      <div className="inline-block " ref={childrenRef}>
         {children}
       </div>
     </div>
